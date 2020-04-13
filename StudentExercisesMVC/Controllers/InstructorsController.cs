@@ -70,13 +70,19 @@ namespace StudentExercisesMVC.Controllers
         // GET: Instructors/Create
         public ActionResult Create()
         {
-            return View();
+            var cohortOptions = GetCohortOptions();
+            var viewModel = new InstructorEditViewModel()
+            {
+                CohortOptions = cohortOptions
+            };
+            return View(viewModel);
+
         }
 
         // POST: Instructors/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Instructor instructor)
+        public ActionResult Create(InstructorEditViewModel instructor)
         {
             try
             {
@@ -96,7 +102,7 @@ namespace StudentExercisesMVC.Controllers
                         cmd.Parameters.Add(new SqlParameter("@specialty", instructor.Specialty));
 
                         var id = (int)cmd.ExecuteScalar();
-                        instructor.Id = id;
+                        instructor.InstructorId = id;
 
                         return RedirectToAction(nameof(Index));
                     }
@@ -114,6 +120,7 @@ namespace StudentExercisesMVC.Controllers
         public ActionResult Edit(int id)
         {
             var instructor = GetInstructorById(id);
+            var cohortOptions = GetCohortOptions();
             var viewModel = new InstructorEditViewModel()
             {
                 InstructorId = instructor.Id,
@@ -121,16 +128,16 @@ namespace StudentExercisesMVC.Controllers
                 LastName = instructor.LastName,
                 Specialty = instructor.Specialty,
                 CohortId = instructor.CohortId,
-                SlackHandle = instructor.SlackHandle
-                // CohortOptions = TODO
+                SlackHandle = instructor.SlackHandle,
+                CohortOptions = cohortOptions
             };
-            return View(instructor);
+            return View(viewModel);
         }
 
         // POST: Instructors/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Instructor instructor)
+        public ActionResult Edit(int id, InstructorEditViewModel instructor)
         {
             try
             {
